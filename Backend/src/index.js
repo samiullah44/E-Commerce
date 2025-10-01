@@ -9,13 +9,15 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 const app=express();
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(compression()); // compress responses for faster speed
+app.use(compression()); 
 app.use(cookieParser());
 
-//All the routes pages
 app.use('/api/auth',authRouter);
 
 app.get("/",(req,res)=>{

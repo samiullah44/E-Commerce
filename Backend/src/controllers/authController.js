@@ -15,7 +15,6 @@ export let signupUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      error: "Validation failed",
       errors: formatErrors(errors.array()),
     });
   }
@@ -58,11 +57,11 @@ export const loginUser = async (req,res) => {
   try {
     const { email, password } = req.body;
     const userRes = await findUserByEmail(email);
-    if (userRes.rowCount === 0) return res.status(401).json({ error: "Invalid Email or Password" });
+    if (userRes.rowCount === 0) return res.status(401).json({ message: "Invalid Email or Password" });
     const user = userRes.rows[0];
 
     const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) return res.status(401).json({ error: "Invalid Email or Password" });
+    if (!match) return res.status(401).json({ message: "Invalid Email or Password" });
 
     const accessToken = await generateToken(user.id,user.role,req,res);
 
@@ -81,20 +80,20 @@ export const refresh = async (req, res) => {
  try {
     // refresh token comes from httpOnly cookie
     const token = req.cookies?.refreshToken;
-    if (!token) return res.status(401).json({ error: "No refresh token" });
+    if (!token) return res.status(401).json({ message: "No refresh token" });
 
     // check db
     const tokenRow = await findRefreshToken(token);
-    if (tokenRow.rowCount === 0) return res.status(401).json({ error: "Invalid refresh token" });
+    if (tokenRow.rowCount === 0) return res.status(401).json({ message: "Invalid refresh token" });
     const stored = tokenRow.rows[0];
-    if (stored.revoked) return res.status(401).json({ error: "Token revoked" });
+    if (stored.revoked) return res.status(401).json({ message: "Token revoked" });
 
     let payload;
     try {
       payload = verifyAccessToken(token);
     } catch (e) {
       await revokeRefreshToken(token);
-      return res.status(401).json({ error: "Invalid refresh token" });
+      return res.status(401).json({ message: "Invalid refresh token" });
     }
     // issue new access token (and optionally new refresh token)
     const accessToken = await generateToken(payload.id,payload.role,req,res);
