@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import PasswordChecklist from "../components/PasswordChecklist";
 import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
 
-const SignupPage = () => {
+const SignupPage = ({ setIsFlipped }) => {
   const { signup, isSigningUp } = useAuthStore();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const [submitted, setSubmitted] = useState(false); // track form submission
+  const [submitted, setSubmitted] = useState(false);
   const [touched, setTouched] = useState({
     name: false,
     email: false,
@@ -39,7 +40,7 @@ const SignupPage = () => {
       !isValidEmail(formData.email) ||
       !isPasswordValid
     ) {
-      toast.error("All Fields required");
+      toast.error("All fields are required");
       return;
     }
 
@@ -47,52 +48,67 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-blue-100 p-4 animate-fadeIn">
-      <div className="w-full max-w-lg">
-        <div className="backdrop-blur-xl border bg-black border-white/50 rounded-2xl shadow-2xl py-6 px-6 md:px-10 space-y-6 animate-fadeInUp">
-          <div className="text-center">
-            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-400 bg-clip-text text-transparent">
-              Create Account
+    <div className="[transform:rotateY(180deg)]">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="w-full max-w-md "
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="backdrop-blur-xl bg-white/60 border border-[#d4af37]/30 rounded-3xl shadow-xl p-8 md:px-10 space-y-6"
+        >
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-wide">
+              <span className="bg-gradient-to-r from-gray-800 via-[#d4af37] to-gray-700 bg-clip-text text-transparent">
+                Create Account
+              </span>
             </h1>
-            <p className="text-base-content/70 mt-2 text-sm md:text-base">
-              Join the future of Online Shopping
+            <p className="text-gray-600 text-sm md:text-base">
+              Join the future of elegant online shopping
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex gap-4">
             <button
               type="button"
-              className="flex-1 text-lg py-2 rounded-2xl bg-gradient-to-tr from-purple-600 to-accent text-white shadow-lg hover:scale-105 transition-transform duration-200"
+              className="flex-1 py-2.5 rounded-xl bg-gradient-to-br from-[#d4b241] to-[#c4ac56] text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.03] transition duration-300"
             >
-              Google
+              Continue with Google
             </button>
             <button
               type="button"
-              className="flex-1 text-lg py-2 rounded-2xl bg-gradient-to-bl from-cyan-400 to-amber-600 text-white shadow-lg hover:scale-105 transition-transform duration-200"
+              className="flex-1 py-2.5 rounded-xl border border-gray-300 bg-white/70 text-gray-800 font-medium shadow-sm hover:bg-gray-50 hover:scale-[1.02] transition duration-300"
             >
               OTP
             </button>
           </div>
 
-          <div className="divider text-sm text-base-content/70">or</div>
+          <div className="relative flex items-center">
+            <div className="flex-grow border-t border-gray-400 border-1"></div>
+            <span className="mx-3 text-gray-500 text-sm">or</span>
+            <div className="flex-grow border-t border-gray-400 border-1"></div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="relative">
-              <label className="block text-sm md:text-base font-medium p-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
               </label>
               <div className="relative">
+                <User className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   name="name"
                   type="text"
-                  placeholder="Enter Name"
+                  placeholder="Enter your name"
                   value={formData.name}
                   onChange={setValue}
                   onBlur={() => setTouched({ ...touched, name: true })}
-                  className="peer w-full rounded-2xl border pl-10 py-2 pr-3 text-sm md:text-base shadow-sm 
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-transform duration-200 hover:scale-[1.01]"
+                  className="w-full rounded-2xl border border-gray-300 pl-10 pr-3 py-2  bg-white/70 text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37] transition-all duration-200"
                 />
-                <User className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none" />
               </div>
               {(submitted || touched.name) && !formData.name && (
                 <p className="text-red-500 text-xs mt-1">
@@ -101,11 +117,12 @@ const SignupPage = () => {
               )}
             </div>
 
-            <div className="relative">
-              <label className="block text-sm md:text-base font-medium p-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
               <div className="relative">
+                <Mail className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   name="email"
                   type="email"
@@ -113,10 +130,8 @@ const SignupPage = () => {
                   value={formData.email}
                   onChange={setValue}
                   onBlur={() => setTouched({ ...touched, email: true })}
-                  className="peer w-full rounded-2xl border pl-10 py-2 pr-3 text-sm md:text-base shadow-sm 
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-transform duration-200 hover:scale-[1.01]"
+                  className="w-full rounded-2xl border border-gray-300 pl-10 pr-3 py-2  bg-white/70 text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37] transition-all duration-200 hover:scale-[1.01]"
                 />
-                <Mail className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none" />
               </div>
               {(submitted || touched.email) && !formData.email && (
                 <p className="text-red-500 text-xs mt-1">Email is required</p>
@@ -130,11 +145,12 @@ const SignupPage = () => {
                 )}
             </div>
 
-            <div className="relative">
-              <label className="block text-sm md:text-base font-medium p-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
+                <Lock className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -142,14 +158,12 @@ const SignupPage = () => {
                   value={formData.password}
                   onChange={setValue}
                   onBlur={() => setTouched({ ...touched, password: true })}
-                  className="peer w-full rounded-2xl border pl-10 pr-10 py-2 text-sm md:text-base shadow-sm 
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-transform duration-200 hover:scale-[1.01]"
+                  className="w-full rounded-2xl border border-gray-300 pl-10 pr-10 py-2 bg-white/70 text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-[#d4af37] transition-all duration-200"
                 />
-                <Lock className="size-5 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none" />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-blue-500 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#b6935c] transition"
                 >
                   {showPassword ? (
                     <EyeOff className="size-5" />
@@ -158,12 +172,14 @@ const SignupPage = () => {
                   )}
                 </button>
               </div>
+
               {formData.password && (
                 <PasswordChecklist
                   password={formData.password}
                   onValidChange={setIsPasswordValid}
                 />
               )}
+
               {(submitted || touched.password) && !formData.password && (
                 <p className="text-red-500 text-xs mt-1">
                   Password is required
@@ -181,11 +197,11 @@ const SignupPage = () => {
             <div className="w-full text-center">
               <button
                 type="submit"
-                className={`w-1/2 py-2 rounded-2xl text-white font-medium shadow-lg hover:scale-105 transition-transform duration-200 ${
+                className={`w-1/2 py-2 rounded-2xl text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-300 ${
                   isPasswordValid &&
                   formData.name &&
                   isValidEmail(formData.email)
-                    ? "bg-gradient-to-bl from-indigo-600 to-purple-600 hover:bg-blue-700"
+                    ? "bg-gradient-to-br from-[#d4b241] to-[#c4ac56]"
                     : "bg-gray-400 cursor-not-allowed"
                 }`}
                 disabled={isSigningUp}
@@ -202,17 +218,17 @@ const SignupPage = () => {
             </div>
           </form>
 
-          <div className="text-center text-base-content/70">
+          <p className="text-center text-gray-600">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="font-medium text-primary hover:underline"
+            <span
+              onClick={setIsFlipped}
+              className="text-[#d4af37] font-medium hover:underline cursor-pointer"
             >
               Login
-            </Link>
-          </div>
-        </div>
-      </div>
+            </span>
+          </p>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
